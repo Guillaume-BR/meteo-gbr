@@ -3,11 +3,11 @@ execute:
 project:
   type: website
   render:
-    - index.qmd
+    - meteo/index.qmd
 website:
   title: "Meteo Montpeul"
   site-url: https://Guillaume-BR.github.io
-  repo-url: https://github.com/Guillaume-BR/mameteo
+  repo-url: https://github.com/Guillaume-BR
   page-navigation: true
   repo-actions: [source, issue]
 
