@@ -1,0 +1,37 @@
+execute:
+  freeze: auto
+project:
+  type: website
+  render:
+    - index.qmd
+website:
+  title: "Meteo Montpeul"
+  site-url: https://Guillaume-BR.github.io
+  repo-url: https://github.com/Guillaume-BR/mameteo
+  page-navigation: true
+  repo-actions: [source, issue]
+
+  # navbar:
+  #   left:
+  #     - href: index.qmd
+  #       text: HAX712X
+format:
+  html:
+    theme:
+      cosmo
+      # light: spacelab
+    css: custom.scss
+    # mainfont: Atkinson Hyperlegible
+    html-math-method: katex
+    toc-location: right
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    code-tools:
+      toggle: false
+      source: false
+    code-overflow: wrap
+    fig-responsive: true
+    fig.align: center
+    # self-contained: true
+    # fig-format: svg
