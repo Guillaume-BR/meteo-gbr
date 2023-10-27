@@ -1,36 +1,16 @@
-
 project:
   type: website
-  render:
-    - meteo/index.qmd
-website:
-  title: "Meteo Montpeul"
-  site-url: https://Guillaume-BR.github.io
-  repo-url: https://github.com/Guillaume-BR
-  page-navigation: true
-  repo-actions: [source, issue]
 
-  # navbar:
-  #   left:
-  #     - href: index.qmd
-  #       text: HAX712X
+website:
+  title: "Météo Montpeul"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - about.qmd
+
 format:
   html:
-    theme:
-      cosmo
-      # light: spacelab
-    css: custom.scss
-    # mainfont: Atkinson Hyperlegible
-    html-math-method: katex
-    toc-location: right
+    theme: cosmo
+    css: styles.css
     toc: true
-    toc-depth: 3
-    code-fold: false
-    code-tools:
-      toggle: false
-      source: false
-    code-overflow: wrap
-    fig-responsive: true
-    fig.align: center
-    # self-contained: true
-    # fig-format: svg
