@@ -1,9 +1,9 @@
 latitude,longitude,elevation,utc_offset_seconds,timezone,timezone_abbreviation
 43.61,3.88,58.0,0,GMT,GMT
 
-time,weathercode (wmo code),temperature_2m_max (°C),temperature_2m_min (°C),precipitation_sum (mm),windspeed_10m_max (km/h)
-2023-10-24,51,19.7,13.5,0.20,20.0
-2023-10-25,3,21.2,12.2,0.00,20.6
-2023-10-26,53,17.3,13.2,0.80,18.8
-2023-10-27,3,18.7,11.7,0.00,24.5
-2023-10-28,3,11.6,10.4,NaN,7.6
+time,weathercode (wmo code),temperature_2m_max (°C),temperature_2m_min (°C),precipitation_sum (mm),windspeed_10m_max (km/h),winddirection_10m_dominant (°)
+2023-10-30,63,20.6,14.0,3.40,29.9,171
+2023-10-31,3,18.8,12.3,0.00,16.1,280
+2023-11-01,3,16.6,10.4,0.00,22.4,11
+2023-11-02,61,14.9,9.7,3.60,27.0,322
+2023-11-03,51,9.1,7.6,NaN,12.4,NaN

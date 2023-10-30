@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: '15 11 * * *' #refresh tous les jours à 5h du mat
+    - cron: '0 5 * * *' #refresh tous les jours à 5h du mat
   workflow_dispatch:
   push:
     branches: main

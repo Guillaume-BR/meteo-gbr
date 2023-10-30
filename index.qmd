@@ -5,15 +5,17 @@ jupyter: python3
 
 Dans le fichier [meteo.py](meteo.py) nous avons récupéré les données pour obtenir la météo suivante :
 
-
 ```{python}
 #| echo: false
 import datetime
 import os
-import pooch
+import pooch 
 import pandas as pd
 import matplotlib.pyplot as plt
+import requests
 from PIL import Image
+from tabulate import tabulate
+import json
 import urllib
 
 #Date d'aujourd'hui
@@ -22,84 +24,205 @@ aujourd_hui = datetime.date.today()
 # Date cinq jours plus tard
 J_plus_4 = aujourd_hui + datetime.timedelta(days=4)
 
-# télécharger le jeu de données
+# télécharger le jeu de données (wmo code, tmin, tmax, cumul de pluie)
+url_db = "https://api.open-meteo.com/v1/meteofrance?latitude=43.6109&longitude=3.8763&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max,winddirection_10m_dominant&timezone=GMT&start_date={0}&end_date={1}&format=csv".format(aujourd_hui,J_plus_4)
 
-url_db = "https://api.open-meteo.com/v1/meteofrance?latitude=43.6109&longitude=3.8763&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&timezone=GMT&start_date={0}&end_date={1}&format=csv".format(aujourd_hui,J_plus_4)
+r = requests.get(url_db)
+open("./data/db.csv", "wb").write(r.content)
 
-path_target = "./data/db.csv"
-path, fname = os.path.split(path_target)
-pooch.retrieve(url_db, path=path, fname=fname, known_hash=None) 
+#jeu de données pour avoir le vent horaire et calculer la moyenne
+url_db1 = "https://api.open-meteo.com/v1/meteofrance?latitude=43.6109&longitude=3.8763&hourly=windspeed_10m&start_date={0}&end_date={1}&format=csv".format(aujourd_hui,J_plus_4)
 
-# transformation db en dataframe
-df = pd.read_csv(path_target, skiprows=3, index_col=None,)
+r1 = requests.get(url_db1)
+open("./data/db1.csv", "wb").write(r1.content)
 
+#transformation des csv en dataframe
+df = pd.read_csv("./data/db.csv", skiprows=3, index_col=None,)
+df = df.fillna("-")
+
+df1 = pd.read_csv("./data/db1.csv", skiprows=3, index_col=None,)
+df1.rename(columns={"windspeed_10m (km/h)" : "vent"} , inplace=True)
+
+#on renomme les colonnes
 df.rename(columns={"weathercode (wmo code)" : "code" , "temperature_2m_max (°C)":"tmax" , "temperature_2m_min (°C)":"tmin" , "precipitation_sum (mm)" : "pluie" , "windspeed_10m_max (km/h)" : "vent"}, inplace = True)
 
+#valeur de la pluie pour l'affichage des gouttes
+pluie = df['pluie'].tolist()
+
+#ajout des unités
 df['tmax'] = df['tmax'].astype(str) + ' °C'
 df['tmin'] = df['tmin'].astype(str) + ' °C'
 df['pluie'] = df['pluie'].astype(str) + ' mm'
 df['vent'] = df['vent'].astype(str) + ' km/h'
 
-# Créez une liste de noms de jours de la semaine et de noms de mois
-noms_jours = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
-noms_mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
+#On transpose la dataframe
+df = df.T
+
+#calcul du vent moyen et remplacement de la valeur dans db
+for i in range(5):
+    subset = df1.loc[24*i : 24*(i+1)-1]
+    moyenne = subset['vent'].mean()
+    df.iloc[5,i] = round(moyenne , 1)
+    df.iloc[5,i] = str(df.iloc[5,i]) + ' km/h'
 
 
 #Création du tableau contenant les informations voulues
-fig = plt.figure(figsize=(10,10), dpi=300)
+fig = plt.figure(figsize=(14,10), dpi=300)
 ax = plt.subplot()
 
-ncols = 5
-nrows = df.shape[1]
+ncols = df.shape[1]
+nrows = df.shape[0] - 1
 
 ax.set_xlim(0, ncols + 1)
 ax.set_ylim(0, nrows)
 ax.set_axis_off()
 
-positions = [1.5, 2.5, 3.5, 4.5, 5.5]
+positions = [1, 2, 3, 4, 5]
 
-columns = df['time'].tolist()
+columns = df.iloc[0].tolist()
 
-# Add table's main text
-for i in range(1,nrows):
+
+# création des dates (nom du jour/numéro/mois)
+noms_jours = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+noms_mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
+
+for i in range(ncols):
+    df.iloc[0,i] = datetime.datetime.strptime(df.iloc[0,i] , "%Y-%m-%d")
+    jour_semaine = noms_jours[df.iloc[0,i].weekday()]
+    numero_jour = df.iloc[0,i].day
+    mois = noms_mois[df.iloc[0,i].month - 1]
+    df.iloc[0,i] = f"{jour_semaine}\n{numero_jour}\n{mois}"
+
+#nom des colonnes
+for i in range(ncols):
+        ha = 'center'
+        ax.annotate(
+            xy=(positions[i], nrows-0.7),
+            text=df.iloc[0,i],
+            ha=ha,
+            va='bottom',
+            weight='bold',
+            fontsize = 15
+        )
+
+
+for j, column in enumerate(columns):
+        ha = 'center'
+        ax.annotate(
+            xy = (positions[j], nrows - 2),
+            text = df.iloc[2,j],
+            ha = ha,
+            va = 'center',
+            weight='bold',
+            fontsize = 12 ,
+            bbox=dict(boxstyle="round4",pad = 0.8, fc="indianred")
+        )
+
+for j, column in enumerate(columns):
+        ha = 'center'
+        ax.annotate(
+            xy = (positions[j], nrows - 3),
+            text = df.iloc[3,j],
+            ha = ha,
+            va = 'center',
+            weight='bold',
+            fontsize = 12 ,
+            bbox=dict(boxstyle="round4", pad = 0.8, fc="lightblue")
+        )
+
+# Ajout des valeurs dans le tableau
+for i in range(4,nrows):
     for j, column in enumerate(columns):
         ha = 'center'
         ax.annotate(
             xy = (positions[j], nrows - i),
-            text = df.iloc[j,i],
+            text = df.iloc[i,j],
             ha = ha,
+            weight='bold',
+            fontsize = 12 ,
             va = 'center'
         )
 
-# création des dates (nom du jour/numéro/mois)
-dates = [] 
-for i in range(5):
-    jour = datetime.date.today() + datetime.timedelta(days=i)
-    jour_semaine = noms_jours[jour.weekday()]
-    numero_mois = jour.day
-    mois = noms_mois[jour.month]
-    jour = f"{jour_semaine}\n{numero_mois}\n{mois}"
-    dates.append(jour)
 
-#nom des colonnes
-for index, c in enumerate(dates):
-        ha = 'center'
-        ax.annotate(
-            xy=(positions[index], nrows-0.5),
-            text=dates[index],
-            ha=ha,
-            va='bottom',
-            weight='bold'
-        )
-#nom des lignes
-lignes = []
+#création des lignes de séparations
+ax.plot([0.5, 5.5], [nrows, nrows], lw=6, color='black', marker='', zorder=4)
+ax.plot([0.5, 5.5], [0.5, 0.5], lw=6, color='black', marker='', zorder=4)
+for x in range(1, nrows - 1):
+    ax.plot([0.5, 5.5], [x+0.5, x + 0.5], lw=1.15, color='gray', ls=':', zorder=3 , marker='')
+
+# fichier json des icones
+icone = open("./data/ic.json", "r")
+ic = icone.read()
+df_ic = json.loads(ic)
+
+#fonction pour insérer les images
+def image_code(code, ax):
+    url = df_ic[str(code)]['day']['image']
+    image = Image.open(urllib.request.urlopen(url))
+    ax.imshow(image)
+    ax.axis('off')
+    return ax
+
+#Transformation functions
+DC_to_FC = ax.transData.transform
+FC_to_NFC = fig.transFigure.inverted().transform
+
+# Take data coordinates and transform them to normalized figure coordinates
+DC_to_NFC = lambda x: FC_to_NFC(DC_to_FC(x))
+
+# Ajout des images du temps
+ax_point_1 = DC_to_NFC([0.25, 0.25])
+ax_point_2 = DC_to_NFC([0.75, 0.75])
+ax_width = abs(ax_point_1[0] - ax_point_2[0])*2
+ax_height = abs(ax_point_1[1] - ax_point_2[1])*2
+for i in range(ncols):
+    ax_coords = DC_to_NFC([ i + 0.5, 4.4])
+    ico_ax = fig.add_axes(
+        [ax_coords[0], ax_coords[1], ax_width , ax_height ]
+    )
+    image_code(df.iloc[1,i], ico_ax)
+
+#Ajout des gouttes d'eau
+gt_point_1 = DC_to_NFC([0.25, 0.25])
+gt_point_2 = DC_to_NFC([0.5, 0.5])
+gt_width = abs(gt_point_1[0] - gt_point_2[0])
+gt_height = abs(gt_point_1[1] - gt_point_2[1])
+for i in range(ncols):
+    ax_coords = DC_to_NFC([ i + 0.55 , 1.9])
+    if type(pluie[i]) == float and pluie[i]>= 0:
+        goutte_ax = fig.add_axes(
+        [ax_coords[0], ax_coords[1], gt_width, gt_height]
+    )
+        image = Image.open("./data/goutte.png")
+        goutte_ax.axis('off')
+        goutte_ax.imshow(image)
+
+#Ajout des directions du vent
+v_point_1 = DC_to_NFC([0.25, 0.25])
+v_point_2 = DC_to_NFC([0.4, 0.4])
+v_width = abs(v_point_1[0] - v_point_2[0])
+v_height = abs(v_point_1[1] - v_point_2[1])
+for i in range(ncols):
+    if type(df.iloc[6,i]) == float and df.iloc[6,i]>= 0:
+        ax_coords = DC_to_NFC([ i + 0.55 , 0.9])
+        vent_ax = fig.add_axes(
+        [ax_coords[0], ax_coords[1], v_width, v_height]
+        ) 
+        vent = Image.open("./data/vent.png")
+        vent = vent.rotate(-df.iloc[6,i])
+        vent_ax.axis('off')
+        vent_ax.imshow(vent)
 
 plt.savefig(
     'meteo.svg',
     dpi=300,
     transparent=True
 )
-temps = datetime.datetime.now()
-print(temps)
 ```
 
+```{python}
+#| echo: false
+date = datetime.date.today() 
+heure = datetime.datetime.now().strftime('%H:%M:%S')
+print(f"Site généré le {date} à {heure}" )
+```
