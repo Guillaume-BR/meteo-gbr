@@ -1,11 +1,9 @@
 import datetime
 import os
-import pooch 
 import pandas as pd
 import matplotlib.pyplot as plt
 import requests
 from PIL import Image
-from tabulate import tabulate
 import json
 import urllib
 
@@ -34,7 +32,7 @@ df = df.fillna("-")
 df1 = pd.read_csv("./data/db1.csv", skiprows=3, index_col=None,)
 df1.rename(columns={"windspeed_10m (km/h)" : "vent"} , inplace=True)
 
-#on renomme les colonnes
+#on renomme les colonnes de db
 df.rename(columns={"weathercode (wmo code)" : "code" , "temperature_2m_max (°C)":"tmax" , "temperature_2m_min (°C)":"tmin" , "precipitation_sum (mm)" : "pluie" , "windspeed_10m_max (km/h)" : "vent"}, inplace = True)
 
 #valeur de la pluie pour l'affichage des gouttes
@@ -68,8 +66,6 @@ ax.set_xlim(0, ncols + 1)
 ax.set_ylim(0, nrows)
 ax.set_axis_off()
 
-positions = [1, 2, 3, 4, 5]
-
 columns = df.iloc[0].tolist()
 
 
@@ -88,7 +84,7 @@ for i in range(ncols):
 for i in range(ncols):
         ha = 'center'
         ax.annotate(
-            xy=(positions[i], nrows-0.7),
+            xy=(i+1, nrows-0.7),
             text=df.iloc[0,i],
             ha=ha,
             va='bottom',
@@ -100,7 +96,7 @@ for i in range(ncols):
 for j, column in enumerate(columns):
         ha = 'center'
         ax.annotate(
-            xy = (positions[j], nrows - 2),
+            xy = (j+1, nrows - 2),
             text = df.iloc[2,j],
             ha = ha,
             va = 'center',
@@ -112,7 +108,7 @@ for j, column in enumerate(columns):
 for j, column in enumerate(columns):
         ha = 'center'
         ax.annotate(
-            xy = (positions[j], nrows - 3),
+            xy = (j+1, nrows - 3),
             text = df.iloc[3,j],
             ha = ha,
             va = 'center',
@@ -121,12 +117,12 @@ for j, column in enumerate(columns):
             bbox=dict(boxstyle="round4", pad = 0.8, fc="lightblue")
         )
 
-# Ajout des valeurs dans le tableau
+# Ajout du reste des valeurs dans le tableau
 for i in range(4,nrows):
     for j, column in enumerate(columns):
         ha = 'center'
         ax.annotate(
-            xy = (positions[j], nrows - i),
+            xy = (j+1, nrows - i),
             text = df.iloc[i,j],
             ha = ha,
             weight='bold',
