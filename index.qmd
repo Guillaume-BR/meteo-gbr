@@ -3,7 +3,7 @@ title: "Météo Montpeul"
 jupyter: python3
 ---
 
-Dans le fichier [meteo.py](meteo.py) nous avons récupéré les données pour obtenir la météo suivante :
+Dans le fichier [meteo.py](meteo.py), nous avons récupéré certaines données pour obtenir le bulletin météo suivant :
 
 ```{python}
 #| echo: false
