@@ -199,9 +199,8 @@ DC_to_FC = ax.transData.transform
 FC_to_NFC = fig.transFigure.inverted().transform
 
 # Take data coordinates and transform them to normalized figure coordinates
-
-
-def DC_to_NFC(x): return FC_to_NFC(DC_to_FC(x))
+def DC_to_NFC(x): 
+	return FC_to_NFC(DC_to_FC(x))
 
 
 # Ajout des images du temps

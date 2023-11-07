@@ -8,7 +8,7 @@ Le résultat obtenu est visible en cliquant sur [ce lien](https://guillaume-br.g
 
 Voici un aperçu de l'affichage : 
 
-![exemple](https://guillaume-br.github.io/index_files/figure-html/cell-2-output-1.png)
+![exemple](meteo.svg)
 
 On peut voir : 
 * le temps approximatif du jour
