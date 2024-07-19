@@ -159,7 +159,7 @@ def image_code(code, ax):
     ax.axis('off')
     return ax
 
-#Transformation functions
+#Transformation en différents type de coordonnées
 DC_to_FC = ax.transData.transform
 FC_to_NFC = fig.transFigure.inverted().transform
 
