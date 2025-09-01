@@ -1,8 +1,8 @@
 # Projet météo
 
-Dans ce projet météo, l'objectif était de créer une page web permettant d'afficher la météo à 5 jours pour la ville de Montpellier. La page devait s'actualiser automatiquement tous les jours. 
+Dans ce projet météo, l'objectif était de créer une page web permettant d'afficher la météo à 5 jours pour la ville de Montpellier avec une actualisation quotidienne.
 
-Le résultat obtenu est visible en cliquant sur [ce lien](https://guillaume-br.github.io/) ! 
+Le résultat obtenu est visible en cliquant sur [ce lien](https://meteo-gbr.github.io/) ! 
 
 ## Les éléments demandés
 
@@ -21,7 +21,7 @@ Pour le cumul des précipitations et le vent moyen, il y a une absence d'icône 
 
 ## Détails techniques
 
-Pour réaliser cette page, je devais utiliser des données issus du site suivant : [open-meteo](https://open-meteo.com/en/docs).
+Pour réaliser cette page, j'ai utilisé des données issus du site suivant : [open-meteo](https://open-meteo.com/en/docs).
 
 Tout le développement a été fait en Python et notamment le visuel où j'ai utilisé le package matplotlib. Le rendu correspond à un graphique où les données sont en fait des annotations et images placées aux endroits désirés.
 

@@ -27,10 +27,7 @@ jobs:
       - run: python3 -m pip install jupyter
       - run: python3 -m pip install -r requirements.txt
 
-      - name: Render
-        run: quarto render
-
-      - name: Publish
+      - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           target: gh-pages

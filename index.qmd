@@ -17,7 +17,7 @@ import urllib
 
 # --- Dates ---
 aujourd_hui = datetime.date.today()
-J_plus_4 = aujourd_hui + datetime.timedelta(days=4)
+fin = aujourd_hui + datetime.timedelta(days=3)
 
 # --- Téléchargement des données météo ---
 url_daily = (
@@ -25,12 +25,12 @@ url_daily = (
     f"latitude=43.6109&longitude=3.8763&"
     f"daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,"
     f"windspeed_10m_max,winddirection_10m_dominant&"
-    f"timezone=GMT&start_date={aujourd_hui}&end_date={J_plus_4}&format=csv"
+    f"timezone=GMT&start_date={aujourd_hui}&end_date={fin}&format=csv"
 )
 url_hourly = (
     f"https://api.open-meteo.com/v1/meteofrance?"
     f"latitude=43.6109&longitude=3.8763&"
-    f"hourly=windspeed_10m&start_date={aujourd_hui}&end_date={J_plus_4}&format=csv"
+    f"hourly=windspeed_10m&start_date={aujourd_hui}&end_date={fin}&format=csv"
 )
 
 # Téléchargement avec timeout
@@ -53,7 +53,8 @@ df.rename(columns={
     "temperature_2m_max (°C)": "tmax",
     "temperature_2m_min (°C)": "tmin",
     "precipitation_sum (mm)": "pluie",
-    "windspeed_10m_max (km/h)": "vent"
+    "windspeed_10m_max (km/h)": "vent",
+    "winddirection_10m_dominant (°)" : "direction"
 }, inplace=True)
 
 #valeur de la pluie pour l'affichage des gouttes
@@ -67,12 +68,11 @@ for col, unit in zip(['tmax','tmin','pluie','vent'], ['°C','°C','mm','km/h']):
 df = df.T
 
 #calcul du vent moyen et remplacement de la valeur dans db
-for i in range(5):
+for i in range(4):
     subset = df1.loc[24*i : 24*(i+1)-1]
     moyenne = subset['vent'].mean()
     df.iloc[5,i] = round(moyenne , 1)
     df.iloc[5,i] = str(df.iloc[5,i]) + ' km/h'
-
 
 #Création du tableau contenant les informations voulues
 fig = plt.figure(figsize=(14,10), dpi=300)
@@ -87,13 +87,12 @@ ax.set_axis_off()
 
 columns = df.iloc[0].tolist()
 
-
 # création des dates (nom du jour/numéro/mois)
 noms_jours = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
 noms_mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
 
 for i in range(ncols):
-    df.iloc[0,i] = datetime.datetime.strptime(df.iloc[0,i] , "%Y-%m-%d")
+    df.iloc[0,i] = pd.to_datetime(df.iloc[0, i], format="%Y-%m-%d")
     jour_semaine = noms_jours[df.iloc[0,i].weekday()]
     numero_jour = df.iloc[0,i].day
     mois = noms_mois[df.iloc[0,i].month - 1]
@@ -149,12 +148,11 @@ for i in range(4,nrows):
             va = 'center'
         )
 
-
 #création des lignes de séparations
-ax.plot([0.5, 5.5], [nrows, nrows], lw=6, color='black', marker='', zorder=4)
-ax.plot([0.5, 5.5], [0.5, 0.5], lw=6, color='black', marker='', zorder=4)
+ax.plot([0.5, 4.5], [nrows, nrows], lw=6, color='black', marker='', zorder=4)
+ax.plot([0.5, 4.5], [0.5, 0.5], lw=6, color='black', marker='', zorder=4)
 for x in range(1, nrows - 1):
-    ax.plot([0.5, 5.5], [x+0.5, x + 0.5], lw=1.15, color='gray', ls=':', zorder=3 , marker='')
+    ax.plot([0.5, 4.5], [x+0.5, x + 0.5], lw=1.15, color='gray', ls=':', zorder=3 , marker='')
 
 # fichier json des icones
 with open("./data/ic.json", "r") as icone: 
@@ -162,29 +160,38 @@ with open("./data/ic.json", "r") as icone:
 
 #fonction pour insérer les images
 # --- fonction pour insérer les images ---
-def image_code(code, ax):
-    """
-    Affiche l'image correspondant au code météo dans l'axe ax.
-    - code : valeur de la colonne 'code' (peut être float, str ou "-")
-    - ax : matplotlib axis
-    """
-    try:
-        # ignorer les valeurs manquantes
-        if code == "-" or pd.isna(code):
-            return ax
-
-        # convertir en int pour correspondre aux clés du json
-        code_int = int(float(code))
-        
-        # récupérer l'URL de l'image
-        url = df_ic[str(code_int)]['day']['image']
-        image = Image.open(urllib.request.urlopen(url))
-        ax.imshow(image)
-        ax.axis('off')
-    except (ValueError, KeyError, urllib.error.URLError):
-        # si code non trouvé ou problème réseau, on ignore l'image
-        ax.axis('off')
+#fonction pour insérer les images 
+def image_code(code, ax): 
+    code_int = int(float(code))
+    url = df_ic[str(code_int)]['day']['image'] 
+    image = Image.open(urllib.request.urlopen(url)) 
+    ax.imshow(image) 
+    ax.axis('off') 
     return ax
+
+#def image_code(code, ax):
+#    """
+#    Affiche l'image correspondant au code météo dans l'axe ax.
+#    - code : valeur de la colonne 'code' (peut être float, str ou "-")
+#    - ax : matplotlib axis
+#    """
+#    try:
+#        # ignorer les valeurs manquantes
+#        if code == "-" or pd.isna(code):
+#            return ax
+#
+#        # convertir en int pour correspondre aux clés du json
+#        code_int = int(float(code))
+#        
+#        # récupérer l'URL de l'image
+#        url = df_ic[str(code_int)]['day']['image']
+#        image = Image.open(urllib.request.urlopen(url))
+#        ax.imshow(image)
+#        ax.axis('off')
+#    except (ValueError, KeyError, urllib.error.URLError):
+#        # si code non trouvé ou problème réseau, on ignore l'image
+#        ax.axis('off')
+#    return ax
 
 #Transformation en différents type de coordonnées
 DC_to_FC = ax.transData.transform
