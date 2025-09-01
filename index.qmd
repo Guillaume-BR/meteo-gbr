@@ -3,7 +3,7 @@ title: "Météo Montpeul"
 jupyter: python3
 ---
 
-Voici la météo à Montpellier pour aujourd'hui et les 4 prochains jours :
+Voici la météo à Montpellier pour aujourd'hui et les 3 prochains jours :
 
 ```{python}
 #| echo: false
@@ -243,7 +243,7 @@ for i in range(ncols):
 
 plt.savefig(
     'meteo.svg',
-    dpi=300,
+    dpi=60,
     transparent=True)
 ```
 
