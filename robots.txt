@@ -1,1 +1,1 @@
-Sitemap: https://guillaume-br.github.io/sitemap.xml
+Sitemap: https://meteo-gbr.github.io/sitemap.xml
