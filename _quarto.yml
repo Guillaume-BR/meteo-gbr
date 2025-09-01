@@ -5,8 +5,8 @@ project:
 
 website:
   title: "Météo Montpeul"
-  site-url: https://guillaume-br.github.io/
-  repo-url: https://github.com/Guillaume-BR/Guillaume-BR.github.io
+  site-url: https://meteo-gbr.github.io/
+  repo-url: https://github.com/Guillaume-BR/meteo-gbr.github.io
   navbar:
     left:
       - href: index.qmd
