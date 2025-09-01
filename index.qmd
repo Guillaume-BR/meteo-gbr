@@ -147,16 +147,33 @@ for x in range(1, nrows - 1):
     ax.plot([0.5, 5.5], [x+0.5, x + 0.5], lw=1.15, color='gray', ls=':', zorder=3 , marker='')
 
 # fichier json des icones
-icone = open("./data/ic.json", "r")
-ic = icone.read()
-df_ic = json.loads(ic)
+with open("./data/ic.json", "r") as icone: 
+    df_ic = json.load(icone)
 
 #fonction pour insérer les images
+# --- fonction pour insérer les images ---
 def image_code(code, ax):
-    url = df_ic[str(code)]['day']['image']
-    image = Image.open(urllib.request.urlopen(url))
-    ax.imshow(image)
-    ax.axis('off')
+    """
+    Affiche l'image correspondant au code météo dans l'axe ax.
+    - code : valeur de la colonne 'code' (peut être float, str ou "-")
+    - ax : matplotlib axis
+    """
+    try:
+        # ignorer les valeurs manquantes
+        if code == "-" or pd.isna(code):
+            return ax
+
+        # convertir en int pour correspondre aux clés du json
+        code_int = int(float(code))
+        
+        # récupérer l'URL de l'image
+        url = df_ic[str(code_int)]['day']['image']
+        image = Image.open(urllib.request.urlopen(url))
+        ax.imshow(image)
+        ax.axis('off')
+    except (ValueError, KeyError, urllib.error.URLError):
+        # si code non trouvé ou problème réseau, on ignore l'image
+        ax.axis('off')
     return ax
 
 #Transformation en différents type de coordonnées
@@ -172,10 +189,8 @@ ax_point_2 = DC_to_NFC([0.75, 0.75])
 ax_width = abs(ax_point_1[0] - ax_point_2[0])*2
 ax_height = abs(ax_point_1[1] - ax_point_2[1])*2
 for i in range(ncols):
-    ax_coords = DC_to_NFC([ i + 0.5, 4.4])
-    ico_ax = fig.add_axes(
-        [ax_coords[0], ax_coords[1], ax_width , ax_height ]
-    )
+    ax_coords = DC_to_NFC([i + 0.5, 4.4])
+    ico_ax = fig.add_axes([ax_coords[0], ax_coords[1], ax_width, ax_height])
     image_code(df.iloc[1,i], ico_ax)
 
 #Ajout des gouttes d'eau
