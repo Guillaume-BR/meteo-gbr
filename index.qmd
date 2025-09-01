@@ -8,7 +8,6 @@ Voici la météo à Montpellier pour aujourd'hui et les 4 prochains jours :
 ```{python}
 #| echo: false
 import datetime
-import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import requests
@@ -16,33 +15,46 @@ from PIL import Image
 import json
 import urllib
 
-#Date d'aujourd'hui
+# --- Dates ---
 aujourd_hui = datetime.date.today()
-
-# Date cinq jours plus tard
 J_plus_4 = aujourd_hui + datetime.timedelta(days=4)
 
-# télécharger le jeu de données (wmo code, tmin, tmax, cumul de pluie)
-url_db = "https://api.open-meteo.com/v1/meteofrance?latitude=43.6109&longitude=3.8763&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max,winddirection_10m_dominant&timezone=GMT&start_date={0}&end_date={1}&format=csv".format(aujourd_hui,J_plus_4)
+# --- Téléchargement des données météo ---
+url_daily = (
+    f"https://api.open-meteo.com/v1/meteofrance?"
+    f"latitude=43.6109&longitude=3.8763&"
+    f"daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,"
+    f"windspeed_10m_max,winddirection_10m_dominant&"
+    f"timezone=GMT&start_date={aujourd_hui}&end_date={J_plus_4}&format=csv"
+)
+url_hourly = (
+    f"https://api.open-meteo.com/v1/meteofrance?"
+    f"latitude=43.6109&longitude=3.8763&"
+    f"hourly=windspeed_10m&start_date={aujourd_hui}&end_date={J_plus_4}&format=csv"
+)
 
-r = requests.get(url_db)
-open("./data/db.csv", "wb").write(r.content)
+# Téléchargement avec timeout
+r_daily = requests.get(url_daily, timeout=30)
+with open("./data/db.csv", "wb") as f:
+    f.write(r_daily.content)
 
-#jeu de données pour avoir le vent horaire et calculer la moyenne
-url_db1 = "https://api.open-meteo.com/v1/meteofrance?latitude=43.6109&longitude=3.8763&hourly=windspeed_10m&start_date={0}&end_date={1}&format=csv".format(aujourd_hui,J_plus_4)
+r_hourly = requests.get(url_hourly, timeout=30)
+with open("./data/db1.csv", "wb") as f:
+    f.write(r_hourly.content)
 
-r1 = requests.get(url_db1)
-open("./data/db1.csv", "wb").write(r1.content)
+# --- Lecture des CSV ---
+df = pd.read_csv("./data/db.csv", skiprows=3).fillna("-")
+df1 = pd.read_csv("./data/db1.csv", skiprows=3)
+df1.rename(columns={"windspeed_10m (km/h)": "vent"}, inplace=True)
 
-#transformation des csv en dataframe
-df = pd.read_csv("./data/db.csv", skiprows=3, index_col=None,)
-df = df.fillna("-")
-
-df1 = pd.read_csv("./data/db1.csv", skiprows=3, index_col=None,)
-df1.rename(columns={"windspeed_10m (km/h)" : "vent"} , inplace=True)
-
-#on renomme les colonnes de db
-df.rename(columns={"weathercode (wmo code)" : "code" , "temperature_2m_max (°C)":"tmax" , "temperature_2m_min (°C)":"tmin" , "precipitation_sum (mm)" : "pluie" , "windspeed_10m_max (km/h)" : "vent"}, inplace = True)
+# Renommer les colonnes pour plus de clarté
+df.rename(columns={
+    "weathercode (wmo code)": "code",
+    "temperature_2m_max (°C)": "tmax",
+    "temperature_2m_min (°C)": "tmin",
+    "precipitation_sum (mm)": "pluie",
+    "windspeed_10m_max (km/h)": "vent"
+}, inplace=True)
 
 #valeur de la pluie pour l'affichage des gouttes
 pluie = df['pluie'].tolist()
