@@ -151,21 +151,17 @@ with open("./data/ic.json", "r") as icone:
     df_ic = json.load(icone)
 
 # --- fonction pour insérer les images ---
-def image_code(code, ax, default_url="./data/default.png"):
+def image_code(code, ax):
     """
     Affiche l'image correspondant au code météo dans l'axe ax.
     - code : valeur de la colonne 'code' (peut être float, str ou "-")
     - ax : matplotlib axis
-    - default_url : URL d'une icône par défaut si code invalide
     """
     try:
         # ignorer les valeurs manquantes
         if code == "-" or pd.isna(code):
-            if default_url:
-                image = Image.open(urllib.request.urlopen(default_url))
-                ax.imshow(image)
             return ax
-        
+
         # convertir en int pour correspondre aux clés du json
         code_int = int(float(code))
         
@@ -174,11 +170,8 @@ def image_code(code, ax, default_url="./data/default.png"):
         image = Image.open(urllib.request.urlopen(url))
         ax.imshow(image)
         ax.axis('off')
-    except (ValueError, KeyError):
-        # code non trouvé ou conversion impossible → ignorer ou image par défaut
-        if default_url:
-            image = Image.open(urllib.request.urlopen(default_url))
-            ax.imshow(image)
+    except (ValueError, KeyError, urllib.error.URLError):
+        # si code non trouvé ou problème réseau, on ignore l'image
         ax.axis('off')
     return ax
 
