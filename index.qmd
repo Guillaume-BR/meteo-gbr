@@ -75,7 +75,7 @@ for i in range(4):
     df.iloc[5,i] = str(df.iloc[5,i]) + ' km/h'
 
 #Création du tableau contenant les informations voulues
-fig = plt.figure(figsize=(14,10), dpi=300)
+fig = plt.figure(figsize=(14,10), dpi=60)
 ax = plt.subplot()
 
 ncols = df.shape[1]
