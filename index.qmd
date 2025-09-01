@@ -147,17 +147,39 @@ for x in range(1, nrows - 1):
     ax.plot([0.5, 5.5], [x+0.5, x + 0.5], lw=1.15, color='gray', ls=':', zorder=3 , marker='')
 
 # fichier json des icones
-icone = open("./data/ic.json", "r")
-ic = icone.read()
-df_ic = json.loads(ic)
+with open("./data/ic.json", "r") as icone:
+    df_ic = json.load(icone)
 
-#fonction pour insérer les images
-def image_code(code, ax):
-    code_int = int(float(code))  # supprime le .0 éventuel
-    url = df_ic[str(code_int)]['day']['image']
-    image = Image.open(urllib.request.urlopen(url))
-    ax.imshow(image)
-    ax.axis('off')
+# --- fonction pour insérer les images ---
+def image_code(code, ax, default_url=None):
+    """
+    Affiche l'image correspondant au code météo dans l'axe ax.
+    - code : valeur de la colonne 'code' (peut être float, str ou "-")
+    - ax : matplotlib axis
+    - default_url : URL d'une icône par défaut si code invalide
+    """
+    try:
+        # ignorer les valeurs manquantes
+        if code == "-" or pd.isna(code):
+            if default_url:
+                image = Image.open(urllib.request.urlopen(default_url))
+                ax.imshow(image)
+            return ax
+        
+        # convertir en int pour correspondre aux clés du json
+        code_int = int(float(code))
+        
+        # récupérer l'URL de l'image
+        url = df_ic[str(code_int)]['day']['image']
+        image = Image.open(urllib.request.urlopen(url))
+        ax.imshow(image)
+        ax.axis('off')
+    except (ValueError, KeyError):
+        # code non trouvé ou conversion impossible → ignorer ou image par défaut
+        if default_url:
+            image = Image.open(urllib.request.urlopen(default_url))
+            ax.imshow(image)
+        ax.axis('off')
     return ax
 
 #Transformation en différents type de coordonnées
