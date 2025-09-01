@@ -151,7 +151,7 @@ with open("./data/ic.json", "r") as icone:
     df_ic = json.load(icone)
 
 # --- fonction pour insérer les images ---
-def image_code(code, ax, default_url=None):
+def image_code(code, ax, default_url="./data/default.png"):
     """
     Affiche l'image correspondant au code météo dans l'axe ax.
     - code : valeur de la colonne 'code' (peut être float, str ou "-")
