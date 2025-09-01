@@ -153,7 +153,8 @@ df_ic = json.loads(ic)
 
 #fonction pour insérer les images
 def image_code(code, ax):
-    url = df_ic[str(code)]['day']['image']
+    code_int = int(float(code))  # supprime le .0 éventuel
+    url = df_ic[str(code_int)]['day']['image']
     image = Image.open(urllib.request.urlopen(url))
     ax.imshow(image)
     ax.axis('off')
