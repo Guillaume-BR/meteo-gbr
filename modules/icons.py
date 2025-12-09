@@ -1,6 +1,11 @@
 
+import json
 import urllib
 from PIL import Image
+
+
+with open("./data/ic.json","r") as f:
+    df_ic=json.load(f)
 
 #fonction pour insérer les images
 def image_code(code, ax): 

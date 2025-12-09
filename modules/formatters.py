@@ -12,7 +12,7 @@ def rename_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns=mapping)
 
 def add_units(df: pd.DataFrame) -> pd.DataFrame:
-    units = {"tmax":"°C","tmin":"°C","pluie":"mm","vent":"km/h"}
+    units = {"tmax":"°C","tmin":"°C","pluie":"mm","vent":""}
     for col,unit in units.items():
         df[col] = df[col].astype(str)+f" {unit}"
     return df

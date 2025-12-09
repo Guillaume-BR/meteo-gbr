@@ -14,6 +14,7 @@ from modules.data_loader import download_csv, load_csv
 from PIL import Image
 import json
 from modules.formatters import rename_columns, add_units, format_dates
+from modules.icons import image_code
 
 # --- Dates ---
 aujourd_hui = datetime.date.today()
@@ -146,14 +147,11 @@ ax_point_2 = DC_to_NFC([0.75, 0.75])
 ax_width = abs(ax_point_1[0] - ax_point_2[0])*2
 ax_height = abs(ax_point_1[1] - ax_point_2[1])*2
 
-# fichier json des icones
-with open("./data/ic.json", "r") as icone: 
-    df_ic = json.load(icone)
 
 for i in range(ncols):
     ax_coords = DC_to_NFC([i + 0.5, 4.4])
     ico_ax = fig.add_axes([ax_coords[0], ax_coords[1], ax_width, ax_height])
-    image_code(df.iloc[1,i], ico_ax)
+    image_code(df_day.iloc[1,i], ico_ax)
 
 
 
@@ -178,13 +176,13 @@ v_point_2 = DC_to_NFC([0.4, 0.4])
 v_width = abs(v_point_1[0] - v_point_2[0])
 v_height = abs(v_point_1[1] - v_point_2[1])
 for i in range(ncols):
-    if type(df.iloc[6,i]) == float and df.iloc[6,i]>= 0:
+    if type(df_day.iloc[6,i]) == float and df_day.iloc[6,i]>= 0:
         ax_coords = DC_to_NFC([ i + 0.55 , 0.9])
         vent_ax = fig.add_axes(
         [ax_coords[0], ax_coords[1], v_width, v_height]
         ) 
         vent = Image.open("./data/vent.png")
-        vent = vent.rotate(-df.iloc[6,i])
+        vent = vent.rotate(-df_day.iloc[6,i])
         vent_ax.axis('off')
         vent_ax.imshow(vent)
 
