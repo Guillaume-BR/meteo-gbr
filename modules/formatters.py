@@ -9,7 +9,7 @@ def rename_columns(df: pd.DataFrame) -> pd.DataFrame:
         "windspeed_10m_max (km/h)": "vent",
         "winddirection_10m_dominant (°)" : "direction"
     }
-    return df.rename(columns=mapping,inplace=True)
+    return df.rename(columns=mapping)
 
 def add_units(df: pd.DataFrame) -> pd.DataFrame:
     units = {"tmax":"°C","tmin":"°C","pluie":"mm","vent":"km/h"}
