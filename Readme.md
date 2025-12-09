@@ -1,47 +1,79 @@
-# Projet météo
+# 🌦️ Projet : Prévision météo à 5 jours — Montpellier
 
-Dans ce projet météo, l'objectif était de créer une page web permettant d'afficher la météo à 5 jours pour la ville de Montpellier avec une actualisation quotidienne.
+Ce projet a pour objectif de générer automatiquement une page web affichant les prévisions météo à **5 jours** pour la ville de **Montpellier**, avec une **mise à jour quotidienne** des données.  
+🔗 **Site en ligne :** https://meteo-gbr.github.io/
 
-Le résultat obtenu est visible en cliquant sur [ce lien](https://meteo-gbr.github.io/) ! 
+---
 
-## Les éléments demandés
+## 📊 Aperçu
 
-Voici un aperçu de l'affichage : 
+| Informations affichées | Contenu |
+|-----------------------|---------|
+| Conditions météo | Icône issue des codes WMO |
+| Températures | Température minimale & maximale |
+| Précipitations | Cumul journalier |
+| Vent | Vitesse moyenne + direction dominante |
+| Données manquantes | Icône absente si info indisponible |
+
+Aperçu visuel du tableau généré :
 
 ![exemple](meteo.svg)
 
-On peut voir : 
-* le temps approximatif du jour
-* la température maximale
-* la température minimale
-* le cumul des précipitations 
-* le vent moyen avec la direction principale
+---
 
-Pour le cumul des précipitations et le vent moyen, il y a une absence d'icône lorsque les données étaient manquantes.
+## ⚙️ Technologies utilisées
 
-## Détails techniques
+| Catégorie | Choix technique |
+|----------|-----------------|
+| Langage principal | **Python** |
+| Visualisation graphique | **matplotlib** |
+| Génération site & build | **Quarto** |
+| Hébergement | **GitHub Pages** |
+| Automatisation (CI/CD) | **GitHub Actions** |
+| Source des données météo | **open-meteo.com** |
 
-Pour réaliser cette page, j'ai utilisé des données issus du site suivant : [open-meteo](https://open-meteo.com/en/docs).
+---
 
-Tout le développement a été fait en Python et notamment le visuel où j'ai utilisé le package matplotlib. Le rendu correspond à un graphique où les données sont en fait des annotations et images placées aux endroits désirés.
+### 📁 Structure & pipeline des données
 
-J'ai utilisé trois dataframes :
-* un pour les données journalières ;
-* un pour calculer le vent moyen quotidien et l'intégrer au premier ;
-* un dernier permettant de faire le lien entre les codes wmo (weather code) et les icônes.
+Trois DataFrames principaux ont été construits :
 
-Enfin c'est à l'aide de l'utilitaire Quarto et le sytème GitHub-pages que j'ai pu faire le déploiement de la page.
+1. **DataFrame brut** – données météo journalières
+2. **DataFrame vent** – calcul du vent moyen & intégration au DF principal
+3. **Table de correspondance WMO → icônes**
 
-## Source
+L’affichage final prend la forme d'une figure *matplotlib*, dans laquelle chaque cellule est composée d’annotations et d’images placées manuellement.
 
-Pour réaliser le tableau, ce [tutoriel](https://www.sonofacorner.com/beautiful-tables/) bien détaillé a été très utile.
+---
 
-Les icônes de la météo du jour ont été obtenues à l'aide du fichier json suivant : [lien](https://gist.github.com/stellasphere/9490c195ed2b53c707087c8c2db4ec0c)
+## 🚀 CI/CD & automatisation
 
-Pour le déploiement, j'ai principalement utilisé la documentation de [Quarto](https://quarto.org/docs/publishing/github-pages.html). 
+Le site est mis à jour quotidiennement grâce à **GitHub Actions** qui :
 
-L'actualisation a été la plus grosse difficulté du projet. Vous pouvez voir des exemples des fichiers yml qui ont permis le déploiement : [publish.yml](https://github.com/Guillaume-BR/Guillaume-BR.github.io/blob/main/.github/workflows/publish.yml) et [_quarto.yml](https://github.com/Guillaume-BR/Guillaume-BR.github.io/blob/main/_quarto.yml)
+1. récupère les nouvelles données météo,
+2. génère la figure graphique via Python,
+3. publie automatiquement la page via Quarto sur **GitHub Pages**.
 
-## Contact
+📄 Configuration utilisée :  
+🔗 [`publish.yml`](https://github.com/Guillaume-BR/Guillaume-BR.github.io/blob/main/.github/workflows/publish.yml)  
+🔗 [`_quarto.yml`](https://github.com/Guillaume-BR/Guillaume-BR.github.io/blob/main/_quarto.yml)
 
-Guillaume Bernard-Reymond : guillaume.bernard-reymond@etu.umontpellier.fr
+---
+
+## 🔗 Ressources externes
+
+| Ressource | Lien |
+|----------|------|
+| API météo | https://open-meteo.com/en/docs |
+| Génération visuels tableau | https://www.sonofacorner.com/beautiful-tables/ |
+| Icônes météo WMO (JSON) | https://gist.github.com/stellasphere/9490c195ed2b53c707087c8c2db4ec0c |
+| Documentation Quarto | https://quarto.org/docs/publishing/github-pages.html |
+
+---
+
+## 📬 Contact
+
+👤 **Guillaume Bernard-Reymond**  
+📩 **guillaume.bernardreymond@gmail.com**
+
+N’hésitez pas à me contacter pour toute suggestion, échange technique ou amélioration du projet.
