@@ -11,6 +11,7 @@ import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 from modules.data_loader import download_csv, load_csv
+from PIL import Image
 from modules.formatters import rename_columns, add_units, format_dates
 from modules.icons import image_code
 
