@@ -1,6 +1,6 @@
 
 import json
-import urllib
+import urllib.request
 from PIL import Image
 
 

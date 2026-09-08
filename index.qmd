@@ -11,8 +11,6 @@ import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 from modules.data_loader import download_csv, load_csv
-from PIL import Image
-import json
 from modules.formatters import rename_columns, add_units, format_dates
 from modules.icons import image_code
 
@@ -59,7 +57,7 @@ df_day = df_day.T
 for i in range(4):
     subset = df_hour.loc[24*i : 24*(i+1)-1]
     value = round(subset['vent'].mean() , 1)
-    df_day.iloc[5,i] = str(df_day.iloc[5,i]) + ' km/h'
+    df_day.iloc[5,i] = str(value) + ' km/h'
 
 #Création du tableau contenant les informations voulues
 fig = plt.figure(figsize=(14,10), dpi=60)
@@ -162,7 +160,7 @@ gt_width = abs(gt_point_1[0] - gt_point_2[0])
 gt_height = abs(gt_point_1[1] - gt_point_2[1])
 for i in range(ncols):
     ax_coords = DC_to_NFC([ i + 0.55 , 1.9])
-    if type(pluie[i]) == float and pluie[i]>= 0:
+    if isinstance(pluie[i], float) and pluie[i]>= 0:
         goutte_ax = fig.add_axes(
         [ax_coords[0], ax_coords[1], gt_width, gt_height]
     )
@@ -176,7 +174,7 @@ v_point_2 = DC_to_NFC([0.4, 0.4])
 v_width = abs(v_point_1[0] - v_point_2[0])
 v_height = abs(v_point_1[1] - v_point_2[1])
 for i in range(ncols):
-    if type(df_day.iloc[6,i]) == float and df_day.iloc[6,i]>= 0:
+    if isinstance(df_day.iloc[6,i], float) and df_day.iloc[6,i]>= 0:
         ax_coords = DC_to_NFC([ i + 0.55 , 0.9])
         vent_ax = fig.add_axes(
         [ax_coords[0], ax_coords[1], v_width, v_height]

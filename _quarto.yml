@@ -15,5 +15,4 @@ website:
 format:
   html:
     theme: cosmo
-    css: styles.css
     toc: true

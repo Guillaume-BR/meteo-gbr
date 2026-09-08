@@ -6,3 +6,12 @@
 /.quarto/
 
 **/*.quarto_ipynb
+
+__pycache__/
+*.pyc
+.Rhistory
+
+data/db.csv
+data/db1.csv
+data/db_day.csv
+data/db_hour.csv
