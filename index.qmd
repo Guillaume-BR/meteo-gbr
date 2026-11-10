@@ -12,7 +12,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from modules.data_loader import download_csv, load_csv
 from PIL import Image
-from modules.formatters import rename_columns, add_units, format_dates
+from modules.formatters import rename_columns, add_units, format_dates, normalize_daily
 from modules.icons import image_code
 
 # --- Dates ---
@@ -38,12 +38,16 @@ download_csv(url_daily, "./data/db_day.csv")
 download_csv(url_hourly,"./data/db_hour.csv")
 
 # --- Lecture des CSV ---
-df_day = pd.read_csv("./data/db_day.csv", skiprows=3).fillna("-")
+df_day = pd.read_csv("./data/db_day.csv", skiprows=3)
 df_hour = pd.read_csv("./data/db_hour.csv", skiprows=3)
 df_hour.rename(columns={"windspeed_10m (km/h)": "vent"}, inplace=True)
 
 # Renommer les colonnes de df pour plus de clarté
 df_day = rename_columns(df_day)
+
+# une ligne par jour attendu, colonnes toujours présentes, NaN -> "-"
+dates_attendues = [aujourd_hui + datetime.timedelta(days=k) for k in range(4)]
+df_day = normalize_daily(df_day, dates_attendues)
 
 #valeur de la pluie pour l'affichage des gouttes
 pluie = df_day['pluie'].tolist()
@@ -58,7 +62,7 @@ df_day = df_day.T
 for i in range(4):
     subset = df_hour.loc[24*i : 24*(i+1)-1]
     value = round(subset['vent'].mean() , 1)
-    df_day.iloc[5,i] = str(value) + ' km/h'
+    df_day.iloc[5,i] = "-" if pd.isna(value) else str(value) + ' km/h'
 
 #Création du tableau contenant les informations voulues
 fig = plt.figure(figsize=(14,10), dpi=60)

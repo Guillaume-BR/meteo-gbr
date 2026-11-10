@@ -41,3 +41,16 @@ def format_dates(df: pd.DataFrame) -> pd.DataFrame:
         d = pd.to_datetime(df.iloc[0, i])
         df.iloc[0, i] = f"{jours[d.weekday()]}\n{d.day}\n{mois[d.month - 1]}"
     return df
+
+
+COLUMNS = ["time", "code", "tmax", "tmin", "pluie", "vent", "direction"]
+
+
+def normalize_daily(df: pd.DataFrame, dates: list) -> pd.DataFrame:
+    """Garantit une ligne par date attendue et toutes les colonnes,
+    même si l'API omet des jours ou des variables (ex. la pluie)."""
+    df = df.reindex(columns=COLUMNS)
+    df["time"] = df["time"].astype(str)
+    df = df.drop_duplicates("time").set_index("time")
+    df = df.reindex([str(d) for d in dates]).rename_axis("time").reset_index()
+    return df.fillna("-")
