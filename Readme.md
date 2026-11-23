@@ -1,6 +1,6 @@
 # 🌦️ Projet : Prévision météo à 5 jours — Montpellier
 
-Ce projet a pour objectif de générer automatiquement une page web affichant les prévisions météo à **5 jours** pour la ville de **Montpellier**, avec une **mise à jour quotidienne** des données.  
+Ce projet a pour objectif de générer automatiquement une page web affichant les prévisions météo à **4 jours** pour la ville de **Montpellier**, avec une **mise à jour quotidienne** des données.  
 🔗 **Site en ligne :** https://meteo-gbr.github.io/
 
 ---
