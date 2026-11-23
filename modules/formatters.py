@@ -53,4 +53,5 @@ def normalize_daily(df: pd.DataFrame, dates: list) -> pd.DataFrame:
     df["time"] = df["time"].astype(str)
     df = df.drop_duplicates("time").set_index("time")
     df = df.reindex([str(d) for d in dates]).rename_axis("time").reset_index()
-    return df.fillna("-")
+    # object : "-" n'est pas une valeur valide pour une colonne float64
+    return df.astype(object).fillna("-")

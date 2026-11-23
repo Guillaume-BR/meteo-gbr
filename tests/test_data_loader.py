@@ -24,7 +24,7 @@ class FakeResponse:
 
 
 def test_download_csv_writes_file(tmp_path, monkeypatch):
-    monkeypatch.setattr(requests, "get", lambda *a, **k: FakeResponse(b"a,b\n1,2\n"))
+    monkeypatch.setattr(requests, "get", lambda *_, **__: FakeResponse(b"a,b\n1,2\n"))
     out = tmp_path / "out.csv"
 
     data_loader.download_csv("http://exemple", str(out))
@@ -35,7 +35,7 @@ def test_download_csv_writes_file(tmp_path, monkeypatch):
 def test_download_csv_raises_runtime_error_after_retries(tmp_path, monkeypatch):
     calls = []
 
-    def fail(*args, **kwargs):
+    def fail(*_args, **_kwargs):
         calls.append(1)
         raise requests.ConnectionError("panne")
 
@@ -52,7 +52,7 @@ def test_download_csv_raises_runtime_error_after_retries(tmp_path, monkeypatch):
 
 def test_download_csv_rejects_json_error_payload(tmp_path, monkeypatch):
     monkeypatch.setattr(
-        requests, "get", lambda *a, **k: FakeResponse(b'{"error": true}')
+        requests, "get", lambda *_, **__: FakeResponse(b'{"error": true}')
     )
 
     with pytest.raises(RuntimeError):
@@ -61,7 +61,7 @@ def test_download_csv_rejects_json_error_payload(tmp_path, monkeypatch):
 
 def test_download_csv_retries_on_http_error_then_succeeds(tmp_path, monkeypatch):
     responses = iter([FakeResponse(b"", 429), FakeResponse(b"a\n1\n")])
-    monkeypatch.setattr(requests, "get", lambda *a, **k: next(responses))
+    monkeypatch.setattr(requests, "get", lambda *_, **__: next(responses))
     out = tmp_path / "out.csv"
 
     data_loader.download_csv("http://exemple", str(out))

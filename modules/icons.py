@@ -1,9 +1,9 @@
 import json
 import urllib.request
+
 from PIL import Image
 
-
-with open("./data/ic.json", "r") as f:
+with open("./data/ic.json") as f:
     df_ic = json.load(f)
 
 
