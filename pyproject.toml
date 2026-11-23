@@ -1,0 +1,58 @@
+[project]
+name = "meteo-gbr"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "jupyter>=1.1.1",
+    "matplotlib>=3.11.2",
+    "pandas>=3.1.1",
+    "pillow>=13.0.0",
+    "requests>=2.34.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "ruff>=0.17.6",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.ruff]
+# Version Python cible (pour les règles de modernisation)
+target-version = "py313"
+
+# Longueur de ligne (88 = défaut de Black)
+line-length = 88
+
+# Dossiers à ignorer
+exclude = [
+    ".git",
+    ".venv",
+    ".quarto",
+    "__pycache__",
+]
+
+[tool.ruff.lint]
+# Règles à activer
+select = [
+    "E",      # Erreurs de style pycodestyle
+    "F",      # Erreurs Pyflakes (variables non utilisées, etc.)
+    "I",      # Tri des imports (isort)
+    "B",      # Bugs potentiels (flake8-bugbear)
+    "UP",     # Modernisation syntaxe (pyupgrade)
+    "SIM",    # Simplifications possibles
+    "C4",     # Compréhensions et littéraux plus simples
+    "N",      # Conventions de nommage (pep8-naming)
+    "RUF",    # Règles propres à ruff
+]
+
+# Règles à ignorer
+ignore = [
+    "E501",   # Ligne trop longue (géré par le formatter)
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
