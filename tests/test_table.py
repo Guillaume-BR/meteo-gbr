@@ -71,8 +71,11 @@ def test_build_table_with_missing_days_and_variable(daily, hourly):
     fig = table.build_table(incomplete, hourly.iloc[:48], DATES)
 
     texts = annotations(fig)
-    assert texts[4:6] == ["20.5 °C", "18.0 °C"]
-    assert "- mm" in texts
-    assert texts[-2:] == ["-", "-"]  # pas de données horaires pour les 2 derniers jours
+    # une donnée manquante s'affiche "-" seul, sans unité
+    assert texts[4:8] == ["20.5 °C", "18.0 °C", "-", "-"]  # tmax
+    assert texts[8:12] == ["10.0 °C", "9.5 °C", "-", "-"]  # tmin
+    assert texts[12:16] == ["-"] * 4  # pluie : variable absente
+    # vent : pas de données horaires pour les 2 derniers jours
+    assert texts[16:] == ["10.0 km/h", "10.0 km/h", "-", "-"]
     # 1 axe du tableau + 4 icônes + 0 goutte (pluie absente) + 2 flèches de vent
     assert len(fig.axes) == 7

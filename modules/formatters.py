@@ -13,10 +13,15 @@ def rename_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns=mapping)
 
 
+def _with_unit(value, unit: str) -> str:
+    """Ajoute l'unité à une valeur ; une donnée manquante ("-") reste sans unité."""
+    return "-" if value == "-" else f"{value} {unit}"
+
+
 def add_units(df: pd.DataFrame) -> pd.DataFrame:
     units = {"tmax": "°C", "tmin": "°C", "pluie": "mm", "vent": ""}
     for col, unit in units.items():
-        df[col] = df[col].astype(str) + f" {unit}"
+        df[col] = df[col].map(lambda value, unit=unit: _with_unit(value, unit))
     return df
 
 
